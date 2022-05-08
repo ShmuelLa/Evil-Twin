@@ -1,0 +1,2 @@
+deauth reson numbers:
+https://www.cisco.com/assets/sol/sb/WAP371_Emulators/WAP371_Emulator_v1-0-1-3/help/Apx_ReasonCodes2.html
