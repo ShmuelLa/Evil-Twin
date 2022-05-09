@@ -19,7 +19,6 @@ This type of attack is used to steal unsuspecting users passwords, or personal i
 ### Hardware:
 💻 Laptop <br>
 📡 Network Card - TP_Link Archer T4U - Which allows to use moniter mode
-Operation system: 
- ⚡Kali linux
+⚡Operation system: Kali linux
  
  
