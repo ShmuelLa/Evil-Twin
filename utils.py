@@ -33,3 +33,29 @@ def set_inet_to_monitor(inet_name):
         console.print(e.output)
     else:
         console.print('[bold][green]Network interface was successfuly set to monitor mode[/][/]')
+
+
+def config_rouge_ap(ssid, inet, channel):
+    """
+    Creates a configuration file for the rouge access point with the next settings
+    will be used with the hostapd command:
+    https://wiki.gentoo.org/wiki/Hostapd
+
+        **interface = The network interface we will use for this connection (the one that was
+        previously set to monitor mode and used to the attack)
+        **driver =  Nl80211 is a public 802.11 network driver docs:
+        https://wireless.wiki.kernel.org/en/developers/documentation/nl80211
+        **ssid = The network name
+        **hw_mode = Sets the 802.11 protocol to be used, doc about the various protocols (we will set is to g):
+        https://en.wikipedia.org/wiki/IEEE_802.11#Protocol
+        **channel = Sets the channel for hostapd to work. (From 1 to 13)
+        **macaddr_acl = Used to filter Mac (0 - off, 1 - on)
+        **ign_broadcast_ssid = Sets hiddes AP mode on/off
+        **auth_algs = Sets the authentication algorithm (0 - open, 1 - shared)
+        **wpa_passphrase = Sets wireless password
+    """
+    with open('config/ap.config', 'w') as f:
+        f.write(f'interface={inet}')
+        f.write('driver=nl80211')
+        f.write(f'ssid={ssid}')
+        f.write(f'hw_mode=g')

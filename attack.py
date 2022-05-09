@@ -1,4 +1,6 @@
 from scapy.all import *
+import subprocess
+from utils import config_rouge_ap
 
 one_nord = "2E:E4:F0:11:48:B5"
 Error404 = "10:5A:F7:0F:5F:14"
@@ -31,4 +33,7 @@ if __name__ == "__main__":
     """
     This section is used solely for testing
     """
-    deauth(galaxy_s9, one_nord)
+    # subprocess.run('airmon-ng check kill')
+    # deauth(galaxy_s9, one_nord)
+    # set_fake_ap("wlan1", "AfikKHMAR")
+    config_rouge_ap()

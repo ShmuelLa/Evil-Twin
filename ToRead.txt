@@ -1,2 +1,6 @@
 deauth reson numbers:
 https://www.cisco.com/assets/sol/sb/WAP371_Emulators/WAP371_Emulator_v1-0-1-3/help/Apx_ReasonCodes2.html
+
+defence:
+https://www.aon.com/cyber-solutions/aon_cyber_labs/slaying-rogue-access-points-with-python-and-cheap-hardware/
+https://github.com/s0lst1c3/sentrygun
