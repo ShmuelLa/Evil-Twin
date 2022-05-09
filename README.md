@@ -14,5 +14,5 @@ The evil twin is the wireless LAN equivalent of the phising scam cyberattacks.
 This type of attack is used to steal unsuspecting users passwords, or personal information, either by monitoring their logins or through phishing, which consists of creating a fraudulent website and luring people to it.
 
  ### Visual explication:
-  <img src="" width="600" height="350" >
+  <img src="image_gif/19112020_evil.jpg" width="600" height="350" >
 
