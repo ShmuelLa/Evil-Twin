@@ -11,3 +11,12 @@ sudo aireplay-ng -0 0 -a 26:18:1D:7C:7A:EB -c 5c:17:cf:9a:36:2f wlan1
 
 Set channel
 $sudo iwconfig "NI_NAME" channel 1
+
+Check all running processes and ports (for dnsmasq precheck)
+&sudo lsof -i -P -n | grep LIST
+
+get gateway IP
+$route -n
+
+check running dns:
+$sudo ss -lp "sport = :domain"

@@ -25,9 +25,9 @@ def inet_set_menu():
 
 def set_inet_to_monitor(inet_name):
     try:
-        subprocess.run(f'ifconfig {inet_name} down', check = True)
-        subprocess.run(f'iwconfig {inet_name} mode monitor', check = True)
-        subprocess.run(f'ifconfig {inet_name} up', check = True)
+        subprocess.run(f'ifconfig {inet_name} down', check = True, shell=True)
+        subprocess.run(f'iwconfig {inet_name} mode monitor', check = True, shell=True)
+        subprocess.run(f'ifconfig {inet_name} up', check = True, shell=True)
     except subprocess.CalledProcessError as e:
         console.print('[bold][red]Error while trying to set network interface to monitor more[/][/]')
         console.print(e.output)
@@ -55,7 +55,7 @@ def config_rouge_ap(ssid, inet, channel):
         **wpa = wpa version
         **wpa_passphrase = Sets wireless password
     """
-    with open('config/ap.config', 'w') as f:
+    with open('shell/ap.config', 'w') as f:
         f.write(f'interface={inet}\n')
         f.write('driver=nl80211\n')
         f.write(f'ssid={ssid}\n')
