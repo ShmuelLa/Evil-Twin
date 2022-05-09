@@ -16,3 +16,10 @@ This type of attack is used to steal unsuspecting users passwords, or personal i
  ### Visual explication:
   <img src="image_gif/19112020_evil.jpg" width="600" height="350" >
 
+### Hardware:
+💻 Laptop <br>
+📡 Network Card - TP_Link Archer T4U - Which allows to use moniter mode
+Operation system: 
+ ⚡Kali linux
+ 
+ 
