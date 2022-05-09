@@ -22,7 +22,7 @@ The user connects to a seemingly innocent Wi-Fi network, after logging in they a
 
 ### Hardware:
 💻 Laptop <br>
-📡 Network Card - TP_Link Archer T4U - Which allows to use moniter mode
-⚡Operation system: Kali linux
+📡 Network Card - TP_Link Archer T4U - Which allows to use moniter mode<br>
+⚡Operation system: Kali linux<br>
  
  
