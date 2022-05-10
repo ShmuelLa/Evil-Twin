@@ -2,7 +2,7 @@ from scapy.all import *
 import multiprocessing
 import time
 import os
-from scapy.layers.dot11 import Dot11Beacon, Dot11Elt, Dot11, Dot11ProbeResp
+from scapy.layers.dot11 import Dot11Beacon, Dot11Elt, Dot11
 
 """
 Use:
@@ -10,6 +10,14 @@ Run main (or wrap in another function), enter interface to fit your card.
 wait until scan if complete and choose a network
 returns a tuple of (mac address,ap name,channel, and signal dbm)
 """
+
+global network_dict
+network_dict = {}  # holds network stats - mac,name,channel
+network_index = {}  # for easy access to network using index
+my_macs = [] #= [get_if_hwaddr(i) for i in get_if_list()] # so we don't attack ourselves
+client_dict = {}
+client_index = {}
+
 
 def sniffAP(packet):
     if packet.haslayer(Dot11Beacon):
@@ -26,8 +34,9 @@ def sniffAP(packet):
         stats = packet[Dot11Beacon].network_stats()
         # get the channel of the AP
         channel = stats.get("channel")
-        if mac_addr not in network_dict.keys():
+        if mac_addr not in network_dict.keys()and mac_addr not in my_macs:
             network_dict[mac_addr] = (mac_addr,ap_name, channel, dbm_signal)
+            print(f"Found AP:{network_dict[mac_addr]}")
 
 
 # changing channel every 2 seconds, for timeout times.
@@ -49,8 +58,8 @@ def changeChannel(timeout: int):
 def pickNetwork():
     mac_ok = False
     while not mac_ok:
-        network_mac = input("Please enter a valid index or MAC address of the network you want to attack: ")
-        if len(network_mac) < 16:  # shorter than mac address TODO: this can be problematic in case we have a lot of networks scanned.
+        network_mac = input("Please enter an index (starting from 0) or MAC address of the network you want to attack: ")
+        if not any(c.isalpha() for c in str(network_mac)): #if index is entered there will be no letters
             if int(network_mac) not in network_index.keys():
                 print("ERROR, not a valid index")
                 continue
@@ -64,31 +73,68 @@ def pickNetwork():
             continue
         if network_mac in network_dict.keys():
             print(f"Chosen network: {network_dict.get(network_mac)}")
-            mac_ok = True
     return network_dict.get(network_mac)
 
 
-if __name__ == "__main__":
-    global network_dict
-    network_dict = {}  # holds network stats - mac,name,channel
-    network_index = {}  # for easy access to network using index
+def scanClients(target_ap):
+    def packet_handler(packet):
+        if (packet.addr2 == target_ap or packet.addr3 == target_ap) and packet.addr1 != 'ff:ff:ff:ff':
+            if packet.addr1 not in client_dict[target_ap].keys() and packet.addr2!=packet.addr1 and packet.addr1!=packet.addr3:
+                client_dict[target_ap][packet.addr1] = (packet.addr1, packet.addr2)
+                print(f"Found a possible client: MAC: {client_dict[target_ap][packet.addr1][0]} | Name: {client_dict[target_ap][packet.addr1][1]}")
 
+
+def pickClient(target_ap):
+    client_ok = False
+    while not client_ok:
+        client_mac = input("Please enter an index (starting from 0) or MAC address of the client you want to attack: ")
+        if not any(c.isalpha() for c in str(client_mac)): #if index is entered there will be no letters
+            if int(client_mac) not in client_dict[target_ap].keys():
+                print("ERROR, not a valid index")
+                continue
+            else:
+                print("Valid index")
+                #equivelent to client_dict[target_ap].get(client_index[target_ap].get(int(client_mac)))[0]
+                client_mac = client_index[target_ap].get(int(client_mac))
+                print(f"MAC chosen: {client_mac}")
+                return client_mac
+        if client_mac not in client_dict[target_ap].keys():
+            print("Error, not a valid MAC address")
+            continue
+        if client_mac in client_dict[target_ap].keys():
+            #in ap client dict, get the mac address stored in tuple[0]
+            client_mac = client_dict[target_ap].get(client_mac)[0]
+            print(f"MAC chosen: {client_mac}")
+            return client_mac
+    return client_mac
+
+
+def setMonitor(interface):
+    os.system(f"sudo ifconfig {interface} down")
+    os.system(f"sudo iwconfig {interface} mode monitor")
+    os.system(f"sudo ifconfig {interface} up")
+
+
+if __name__ == "__main__":
+    # interface name
+    interface = "wlx5ca6e686a840"
+    setMonitor(interface)
     # if no timeout is passed, default to 60 seconds
     if len(sys.argv) > 1:
         timeout = int(sys.argv[1])
     else:
         timeout = 60
 
-    # interface name
-    interface = "wlx5ca6e686a840"
+    # ----------------------------PART 1: scan and pick network ---------------------
     # start the thread that changes channels all the networks
-    channel_changer = multiprocessing.Process(target=changeChannel(timeout))
-    channel_changer.start()
-    sniff(prn=sniffAP, iface=interface, timeout=timeout)
 
+    channel_changer = multiprocessing.Process(target=changeChannel,args=(timeout,),daemon=True)
+    channel_changer.start()
+    sniff(prn=sniffAP,iface=interface, timeout=timeout)
+    channel_changer.join()
     # Create network index dict, and prompt picking of a network.
     i = 0
-    print("Available networks:")
+    print("Available Networks:")
     for network in network_dict.keys():
         network_addr = network_dict.get(network)[0]
         network_name = network_dict.get(network)[1]
@@ -97,4 +143,26 @@ if __name__ == "__main__":
         print(f"MAC: {network_addr} | NAME: {network_name} | CHANNEL: {channel} | SIGNAL DBM: {dbm}")
         network_index[i] = network
         i += 1
-    pickNetwork()
+    chosen_network = pickNetwork()
+    chosen_network_mac = client_dict[chosen_network[0]]
+    # --------------------------------------------------------------------------------------------------
+    # ----------------------------PART 2: scan and pick client from chosen network ---------------------
+
+    client_dict[chosen_network_mac] = {}  # define a dictionary for each ap inside a general dict
+    channel_changer = multiprocessing.Process(target=changeChannel, args=(timeout,), daemon=True)
+    channel_changer.start()
+    sniff(iface = interface, prn=scanClients(chosen_network_mac), timeout=timeout)
+    channel_changer.join()
+    i = 0
+    print("Possible Clients:")
+    for client in client_dict[chosen_network_mac].keys():
+        client_mac = client_dict[chosen_network_mac][client][0]
+        print(f"MAC:{client_mac}")
+        client_index[chosen_network_mac][i] = client_dict[chosen_network_mac][0]
+        i += 1
+    chosen_client_mac = pickClient(chosen_network_mac)
+
+
+
+
+
