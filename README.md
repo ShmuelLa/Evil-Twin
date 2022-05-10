@@ -15,7 +15,18 @@ This type of attack is used to steal unsuspecting users passwords, or personal i
 
 ### Method
 The attacker snoops on Internet traffic using a wireless access point.
-The user connects to a seemingly innocent Wi-Fi network, after logging in they are directed to the login portal where they are asked to enter personal details "in order to complete איק login" and we steal this information.
+The "victims" can be any AP around (Wifi access point). Also the mission was besides attack also create a defence against this attack. This tool is mainly target open public wifi networks. Our victim will think he is fine and have full access to interenet but he doesn't he logged in malicious hotspot. From here, you can do alot of things - for example to add bitcoin miner to each request, find a way to make client download malicious script and get full access to his computer and so on..
+
+#The attack following by few steps:
+
+1. Scanning the area, searching for wifi access
+2. Selecting which wifi we want to attack
+3. Sending probe requests / deauth packets cousing struggles there
+4. Raising up fake AP with the same ESSID
+5. Clients will connect to our fake AP
+6. Phishing site will be installed
+7. Personal information will be stolen
+When the client is connected to us, we can sniff information and this is what we doing here, in this example we store gmail phishing site and when client attempt to connect gmail he will actually see the fake page and will enter his details.
 
  ### Visual explication:
   <img src="image_gif/19112020_evil.jpg" width="600" height="350" >
