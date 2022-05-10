@@ -1,5 +1,7 @@
+from operator import sub
 from rich.console import Console
 from prompt_toolkit import prompt
+import time
 import subprocess
 import os
 
@@ -14,6 +16,59 @@ def main_menu_io():
     return user_input
 
 
+def set_netmask():
+    """
+    TODO change this!!!!
+    sudo ifconfig wlan1 up 10.100.101.1 netmask 255.255.255.0
+    sudo route add -net 10.100.101.0 netmask 255.255.255.0 gw 10.100.101.1
+    sudo ip link set wlan1 up
+    """
+    console.print(f'[bold][yellow]Setting network interface netmast range[/][/]')
+    try:
+        subprocess.run('ifconfig wlan1 up 10.100.101.1 netmask 255.255.255.0', check = True, shell=True)
+        subprocess.run('route add -net 10.100.101.0 netmask 255.255.255.0 gw 10.100.101.1', check = True, shell=True)
+        subprocess.run('ip link set wlan1 up', check = True, shell=True)
+    except subprocess.CalledProcessError as e:
+        console.print(f'[bold][red]Error Setting netmast[/][/]')
+        console.print(e.output)
+    else:
+        console.print(f'[bold][green]Successfuly set netmast[/][/]')
+
+
+def set_iptables():
+    console.print(f'[bold][yellow]Setting iptables routing for Rouge access point[/][/]')
+    try:
+        subprocess.run('iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE', check = True, shell=True)
+        subprocess.run('iptables --append FORWARD --in-interface wlan1 -j ACCEPT', check = True, shell=True)
+        subprocess.run('echo 1 > /proc/sys/net/ipv4/ip_forward', check = True, shell=True)
+    except subprocess.CalledProcessError as e:
+        console.print(f'[bold][red]Error Setting iptables[/][/]')
+        console.print(e.output)
+    else:
+        console.print(f'[bold][green]Successfuly set iptables routing for Rouge acces point[/][/]')
+
+
+def set_inet_unmanaged(inet_name):
+    console.print(f'[bold][yellow]Setting network interface {inet_name} to unmanaged by NetworkManager[/][/]')
+    try:
+        subprocess.run('echo "[keyfile]" > /etc/NetworkManager/conf.d/99-unmanaged-devices.conf', check = True, shell=True)
+        subprocess.run(f'echo "unmanaged-devices=interface-name:{inet_name}" >> /etc/NetworkManager/conf.d/99-unmanaged-devices.conf', check = True, shell=True)
+    except subprocess.CalledProcessError as e:
+        console.print(f'[bold][red]Error Setting network interface {inet_name} to unmanaged[/][/]')
+        console.print(e.output)
+    else:
+        console.print(f'[bold][green]Successfuly set network interface {inet_name} to unmanaged[/][/]')
+    console.print(f'[bold][yellow]Restarting NetworkManager service for changes to take effect[/][/]')
+    try:
+        subprocess.run('service NetworkManager restart', check = True, shell=True)
+        time.sleep(10)
+    except subprocess.CalledProcessError as e:
+        console.print(f'[bold][red]Error reatsrting NetworkManager[/][/]')
+        console.print(e.output)
+    else:
+        console.print(f'[bold][green]Successfully restarted NetworkManager service[/][/]')
+
+
 def inet_set_menu():
     os.system('clear')
     console.print('[bold]Please inser the exact desired network interface [blue]name[/]: \n\
@@ -24,6 +79,7 @@ def inet_set_menu():
 
 
 def set_inet_to_monitor(inet_name):
+    console.print(f'[bold][yellow]Setting network interface {inet_name} to monitor mode[/][/]')
     try:
         subprocess.run(f'ifconfig {inet_name} down', check = True, shell=True)
         subprocess.run(f'iwconfig {inet_name} mode monitor', check = True, shell=True)

@@ -24,5 +24,6 @@ while 1:
         while net_interface not in get_if_list() or net_interface is None:
             net_interface = prompt(f'Please insert correct interface name from the next list: [{" ".join(get_if_list())}] \n>> ')
         set_inet_to_monitor(net_interface)
-
-
+        set_inet_unmanaged(net_interface)
+        set_netmask()
+        set_iptables()
