@@ -1,1 +1,1 @@
-sudo apt install dnsmasq dhcpcd5 hostapd automake libtool gengetopt
+sudo apt install dnsmasq dhcpcd5 hostapd automake libtool gengetopt dsniff
