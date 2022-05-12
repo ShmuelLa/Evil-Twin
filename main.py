@@ -11,12 +11,14 @@ import subprocess
 import shlex
 import sys
 from ap_scanner import ap_client_scanner
-from defence_v0 import defend as def0
+# from defence_v0 import defend as def0
 from defence_v1 import defend as def1
 from defence_v3 import defend as def3
+import pymysql.cursors
 
 
-# def track_mysql_changes():
+
+                    
 
 
 def count_file_chars():

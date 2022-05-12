@@ -65,7 +65,7 @@ def set_apache_serv():
     we copy settings from desktop and mobile phones alike
     """
     console.print(f'[bold][yellow]Setting up Apache2 webserver[/][/]')
-    subprocess.rin('cp portal/. /var/www/html -r', check=True, shell=True)
+    subprocess.run('cp portal/. /var/www/html -r', check=True, shell=True)
     subprocess.run('cat config/apache/000-default.conf > /etc/apache2/sites-available/000-default.conf', check=True, shell=True)
     subprocess.run('cat config/apache/000-default.conf > /etc/apache2/sites-enabled/000-default.conf', check=True, shell=True)
     subprocess.run('cat config/apache/android.conf > /etc/apache2/sites-enabled/android.conf', check=True, shell=True)
@@ -139,7 +139,6 @@ def main_menu_io() -> str:
 
 def set_netmask(inet_name):
     """
-    TODO change this!!!!
     sudo ifconfig wlan1 up 10.100.101.1 netmask 255.255.255.0
     sudo route add -net 10.100.101.0 netmask 255.255.255.0 gw 10.100.101.1
     sudo ip link set wlan1 up
