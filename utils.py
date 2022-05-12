@@ -66,6 +66,7 @@ def set_apache_serv():
     """
     console.print(f'[bold][yellow]Setting up Apache2 webserver[/][/]')
     subprocess.run('cp portal/. /var/www/html -r', check=True, shell=True)
+    subprocess.run('chmod 777 /var/www/html/*', check=True, shell=True)
     subprocess.run('cat config/apache/000-default.conf > /etc/apache2/sites-available/000-default.conf', check=True, shell=True)
     subprocess.run('cat config/apache/000-default.conf > /etc/apache2/sites-enabled/000-default.conf', check=True, shell=True)
     subprocess.run('cat config/apache/android.conf > /etc/apache2/sites-enabled/android.conf', check=True, shell=True)
