@@ -10,6 +10,16 @@ import shlex
 console = Console()
 
 
+def defence_menu_io() -> str:
+    console.print('[bold]Please choose the desired [blue]Defence[/]: \n\
+    0. Scans for two SSIDs with the same name and the disconnects them from the network by using Dauth \n\
+    1. Counts the deauth packets and when exceeds a certain value    TODO     \n\
+    3. Scans for two SSIDs with the same name and then does a broad DDoS attack on both of them \n\
+    0. Exit program[/]\n')
+    user_input = prompt('>> ')
+    return user_input
+
+
 def progress_bar(unit: int):
     """
     Simple progress bar to beutify the outputs, will print relatively to 0.001 seconds

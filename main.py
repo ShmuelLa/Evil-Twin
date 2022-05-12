@@ -1,4 +1,5 @@
 import os
+from pip import main
 from scapy.all import get_if_list
 from prompt_toolkit import prompt
 from rich.console import Console
@@ -10,12 +11,12 @@ import subprocess
 import shlex
 import sys
 from ap_scanner import ap_client_scanner
+from defence_v0 import defend as def0
+from defence_v1 import defend as def1
+from defence_v3 import defend as def3
 
-"""
-iphoneaf = '86:78:D0:1f:CF:86'
-onenode = '2E:E4:F0:11:48:B5'
-וubuntu = "98:3B:8F:03:29:0B"
-"""
+
+# def track_mysql_changes():
 
 
 def count_file_chars():
@@ -118,7 +119,16 @@ while 1:
 
     # Defensive Mechanism
     elif user_input == "8":
-        pass
+        def_input = defence_menu_io()
+        if main_inet is None or internet_inet is None:
+            console.print(f'[bold][red]Error: Cannot initiate an a defensive mechanism a capable network interface\n[/][/]')
+            continue
+        if def_input == '0':
+            def0(main)
+        elif def_input == '1':
+            def1()
+        elif def_input == '3':
+            def3(main)
     
     # Install Requirements
     elif user_input == "9":

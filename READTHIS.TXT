@@ -3,8 +3,6 @@ Written by: ron
 To anyone who may use this now (Shmuel)
 1. Change iface in every .conf files as I had changed it in literally every single one of them
 2. open a teminal and perform:
-   a) https://github.com/athanstan/EvilTwin_AP_CaptivePortal.git
-   b) sudo cp EvilTwin_AP_CaptivePortal/. /var/www/html -r
 
 3. type: sudo gedit /etc/apache2/sites-enabled/000-default.conf
    and under the </VirtualHost> line paste the following:
