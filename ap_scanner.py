@@ -161,8 +161,3 @@ if __name__ == "__main__":
         client_index[chosen_network_mac][i] = client_dict[chosen_network_mac][0]
         i += 1
     chosen_client_mac = pickClient(chosen_network_mac)
-
-
-
-
-

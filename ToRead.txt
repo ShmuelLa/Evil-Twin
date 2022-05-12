@@ -7,3 +7,5 @@ https://github.com/s0lst1c3/sentrygun
 
 
 https://www.fosstechnix.com/how-to-install-mysql-8-0-on-kali-linux/
+
+/etc/apache2/sites-enabled/android.conf 
