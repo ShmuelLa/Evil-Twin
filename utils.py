@@ -62,11 +62,11 @@ def set_netmask(inet_name):
         time.sleep(1)
 
 
-def set_iptables():
+def set_iptables(attack_inet, internet_inet):
     console.print(f'[bold][yellow]Setting iptables routing for Rouge access point[/][/]')
     try:
-        subprocess.run(shlex.split('iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE'), check = True)
-        subprocess.run(shlex.split('iptables --append FORWARD --in-interface wlan1 -j ACCEPT'), check = True)
+        subprocess.run(f'iptables --table nat --append POSTROUTING --out-interface {internet_inet} -j MASQUERADE', check = True, shell=True)
+        subprocess.run(f'iptables --append FORWARD --in-interface {attack_inet} -j ACCEPT', check = True, shell=True)
         subprocess.run('echo 1 > /proc/sys/net/ipv4/ip_forward', check = True, shell=True)
     except subprocess.CalledProcessError as e:
         console.print(f'[bold][red]Error Setting iptables[/][/]')
@@ -100,11 +100,20 @@ def set_inet_unmanaged(inet_name):
         time.sleep(1)
 
 
-def inet_set_menu():
+def attack_inet_set():
     os.system('clear')
-    console.print('[bold]Please inser the exact desired network interface [blue]name[/]: \n\
-[red]Note: Interface must be set to Monitor mode[/] if it\'s not we will set it for you :wink: terface \n')
+    console.print('[bold]Please insert the exact desired network interface [blue]name[/] for attacking : \n\
+[red]Note: Interface must be set to Monitor mode for injection[/] \nif it\'s not we will set it for you :wink:  \n')
     os.system('iwconfig')
+    net_interface = prompt('>> ')
+    return net_interface
+
+
+def internet_inet_set():
+    os.system('clear')
+    console.print('[bold]Now please choose the network interface [blue]name[/] for internet access: \n\
+[red]Note: This interface will be used for enabling intert access over the rouge access point[/] \n')
+    os.system('ifconfig')
     net_interface = prompt('>> ')
     return net_interface
 

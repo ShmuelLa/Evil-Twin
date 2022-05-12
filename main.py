@@ -48,7 +48,8 @@ def start_dnsmasq():
 os.system('clear')
 console = Console()
 cprint(figlet_format('Welcome to the EvilTwin Framework!', font='slant'), 'green', attrs=['bold'])
-net_interface = None
+attack_inet = None
+internet_inet = None
 
 while 1:
     user_input = main_menu_io()
@@ -57,14 +58,17 @@ while 1:
         cprint(figlet_format('Goodbye!', font='slant'), 'green')
         exit()
     elif user_input == "1":
-        net_interface = inet_set_menu()
-        while net_interface not in get_if_list() or net_interface is None:
-            net_interface = prompt(f'Please insert correct interface name from the next list: [{" ".join(get_if_list())}] \n>> ')
+        attack_inet = attack_inet_set()
+        while attack_inet not in get_if_list() or attack_inet is None:
+            attack_inet = prompt(f'Please insert correct interface name from the next list: [{" ".join(get_if_list())}] \n>> ')
         os.system('clear')
-        set_inet_to_monitor(net_interface)
-        set_inet_unmanaged(net_interface)
-        set_netmask(net_interface)
-        set_iptables()
+        internet_inet = internet_inet_set()
+        while internet_inet not in get_if_list() or internet_inet is None or internet_inet == attack_inet:
+            internet_inet = prompt(f'Please another correct interface name from the next list: [{" ".join(get_if_list())}] \n>> ')
+        set_inet_to_monitor(attack_inet)
+        set_inet_unmanaged(attack_inet)
+        set_netmask(attack_inet)
+        set_iptables(attack_inet, internet_inet)
         ap = subprocess.Popen(shlex.split('hostapd config/hostapd.conf'))
         start_dnsmasq()
         """
