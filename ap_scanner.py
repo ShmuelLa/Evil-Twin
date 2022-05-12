@@ -89,25 +89,20 @@ def scanClients(packet):
                 print(f"Possible client: {client_mac}")
                 ap_client_list[packet.addr1].append(packet.addr2)
 
-# if (packet.addr2 == target_ap or packet.addr3 == target_ap) and packet.addr1 != "ff:ff:ff:ff:ff:ff":
-#       if packet.addr1 not in client_list:
-#          if packet.addr2 != packet.addr1 and packet.addr1 != packet.addr3:
-#             client_list.append(packet.addr1)
-
 
 def pickClient():
     client_ok = False
     while not client_ok:
         client_mac = input("Please enter an index (starting from 0) or MAC address of the client you want to attack: ")
-        # if not any(c.isalpha() for c in str(client_mac)):  # if index is entered there will be no letters
-        #     if int(client_mac) > len(client_list):
-        #         print("ERROR, not a valid index")
-        #         continue
-        #     else:
-        #         print("Valid index")
-        #         client_mac = client_list[int(client_mac)]
-        #         print(f"MAC chosen: {client_mac}")
-        #         return client_mac
+        if not any(c.isalpha() for c in str(client_mac)):  # if index is entered there will be no letters
+            if int(client_mac) > len(ap_client_list[target_ap]):
+                print("ERROR, not a valid index")
+                continue
+            else:
+                print("Valid index")
+                client_mac = ap_client_list[int(client_mac)]
+                print(f"MAC chosen: {client_mac}")
+                return client_mac
         if client_mac not in ap_client_list[target_ap]:
             print("Error, not a valid MAC address")
             continue

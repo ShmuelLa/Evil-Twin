@@ -124,6 +124,13 @@ while 1:
             continue
         new_pass = get_last_password()
         console.print(f'[bold][green]\n\nSuccess! got new password!! {new_pass} \n\n[/][/]')
+        last_input = user_input = prompt('>> Do you want to proceed? y / n')
+        if last_input == "n":
+            os.system('clear')
+            cprint(figlet_format('Goodbye!', font='slant'), 'green')
+            if virtual_inet is not None:
+                cleanup(virtual_inet)
+            exit()
         os.system('clear')
 
     # Defensive Mechanism
