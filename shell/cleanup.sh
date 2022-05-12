@@ -6,3 +6,5 @@ service dnsmasq stop
 service rpcbind stop
 killall dnsmasq
 killall hostapd
+sudo iw dev wlan1mon interface del
+service NetworkManager restart

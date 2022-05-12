@@ -35,12 +35,12 @@ def sniffAP(packet):
         # get the channel of the AP
         channel = stats.get("channel")
         if mac_addr not in network_dict.keys()and mac_addr not in my_macs:
-            network_dict[mac_addr] = (mac_addr,ap_name, channel, dbm_signal)
+            network_dict[mac_addr] = (mac_addr, ap_name, channel, dbm_signal)
             print(f"Found AP:{network_dict[mac_addr]}")
 
 
 # changing channel every 2 seconds, for timeout times.
-def changeChannel(timeout: int):
+def changeChannel(timeout: int, interface):
     channel = 1
     counter = 0
     while True:
@@ -73,7 +73,7 @@ def pickNetwork():
             continue
         if network_mac in network_dict.keys():
             print(f"Chosen network: {network_dict.get(network_mac)}")
-    return network_dict.get(network_mac)
+            return network_dict.get(network_mac)
 
 
 def scanClients(target_ap):
@@ -115,20 +115,19 @@ def setMonitor(interface):
     os.system(f"sudo ifconfig {interface} up")
 
 
-if __name__ == "__main__":
+def ap_client_scanner(interface):
+    """
+    return: ((mac_addr, ap_name, channel, dbm_signal), chosen_client_mac)
+    """
     # interface name
-    interface = "wlx5ca6e686a840"
     setMonitor(interface)
     # if no timeout is passed, default to 60 seconds
-    if len(sys.argv) > 1:
-        timeout = int(sys.argv[1])
-    else:
-        timeout = 60
+    timeout = 30
 
     # ----------------------------PART 1: scan and pick network ---------------------
     # start the thread that changes channels all the networks
 
-    channel_changer = multiprocessing.Process(target=changeChannel,args=(timeout,),daemon=True)
+    channel_changer = multiprocessing.Process(target=changeChannel,args=(timeout,interface),daemon=True)
     channel_changer.start()
     sniff(prn=sniffAP,iface=interface, timeout=timeout)
     channel_changer.join()
@@ -140,7 +139,7 @@ if __name__ == "__main__":
         network_name = network_dict.get(network)[1]
         channel = network_dict.get(network)[2]
         dbm = network_dict.get(network)[3]
-        print(f"MAC: {network_addr} | NAME: {network_name} | CHANNEL: {channel} | SIGNAL DBM: {dbm}")
+        print(f"Index: {i} | MAC: {network_addr} | NAME: {network_name} | CHANNEL: {channel} | SIGNAL DBM: {dbm}")
         network_index[i] = network
         i += 1
     chosen_network = pickNetwork()
@@ -149,7 +148,7 @@ if __name__ == "__main__":
     # ----------------------------PART 2: scan and pick client from chosen network ---------------------
 
     client_dict[chosen_network_mac] = {}  # define a dictionary for each ap inside a general dict
-    channel_changer = multiprocessing.Process(target=changeChannel, args=(timeout,), daemon=True)
+    channel_changer = multiprocessing.Process(target=changeChannel, args=(timeout,interface), daemon=True)
     channel_changer.start()
     sniff(iface = interface, prn=scanClients(chosen_network_mac), timeout=timeout)
     channel_changer.join()
@@ -161,3 +160,6 @@ if __name__ == "__main__":
         client_index[chosen_network_mac][i] = client_dict[chosen_network_mac][0]
         i += 1
     chosen_client_mac = pickClient(chosen_network_mac)
+    return chosen_network, chosen_client_mac
+
+    

@@ -10,6 +10,12 @@ import shlex
 console = Console()
 
 
+def create_new_inet(inet_name):
+    console.print(f'[bold][yellow]Setting new network interface {inet_name + "mon"}[/][/]')
+    subprocess.run(f'iw dev {inet_name} interface add {inet_name+"mon"} type monitor', check=True, shell=True)
+    return inet_name + "mon"
+
+
 def set_apache_serv():
     console.print(f'[bold][yellow]Setting up Apache2 webserver[/][/]')
     subprocess.run('cat config/apache/000-default.conf > /etc/apache2/sites-available/000-default.conf', check=True, shell=True)
@@ -18,8 +24,8 @@ def set_apache_serv():
     subprocess.run('a2enmod rewrite', check=True, shell=True)
     subprocess.run('systemctl restart apache2', check=True, shell=True)
     subprocess.run('service apache2 start', check=True, shell=True)
-    console.print(f'[bold][green]Apache server was set successfuly\n[/][/]')
-    time.sleep(1)
+    console.print(f'[bold][green]Apache server was set successfuly\n\n[/][/]')
+    time.sleep(2)
 
 
 def set_hostapd_conf(attack_inet, ssid, channel):
@@ -31,10 +37,10 @@ def set_hostapd_conf(attack_inet, ssid, channel):
         file.write(f'channel={channel}\n')
         file.write('macaddr_acl=0\n')
         file.write('ignore_broadcast_ssid=0n')
+        
 
-
-def default_dnsmasq_conf(file):
-    file.write("interface=wlan1\n")
+def default_dnsmasq_conf(file, attack_inet):
+    file.write(f'interface={attack_inet}\n')
     file.write("dhcp-range=10.100.101.2, 10.100.101.30, 255.255.255.0, 12h\n")
     file.write("dhcp-option=3,10.100.101.1 \n")
     file.write("dhcp-option=6,10.100.101.1 \n")
@@ -45,15 +51,15 @@ def default_dnsmasq_conf(file):
     file.write("clear-on-reload\n")
 
 
-def create_dnsconf_captive():
+def create_dnsconf_captive(attack_inet):
     with open('./config/dns.conf', "w") as file:
-        default_dnsmasq_conf(file)
+        default_dnsmasq_conf(file, attack_inet)
         file.write("address=/#/10.100.101.1")
         
 
-def overwrite_dnsconf():
+def overwrite_dnsconf(attack_inet):
     with open('./config/dns.conf', "w") as file:
-        default_dnsmasq_conf(file)
+        default_dnsmasq_conf(file, attack_inet)
 
 
 def main_menu_io():
@@ -82,7 +88,7 @@ def set_netmask(inet_name):
         console.print(e.output)
     else:
         console.print(f'[bold][green]Successfuly set netmast[/][/]')
-        time.sleep(1)
+        time.sleep(2)
 
 
 def set_iptables(attack_inet, internet_inet):
@@ -96,7 +102,7 @@ def set_iptables(attack_inet, internet_inet):
         console.print(e.output)
     else:
         console.print(f'[bold][green]Successfuly set iptables routing for Rouge acces point[/][/]')
-        time.sleep(1)
+        time.sleep(2)
 
 
 def set_inet_unmanaged(inet_name):
@@ -120,7 +126,7 @@ def set_inet_unmanaged(inet_name):
         console.print(e.output)
     else:
         console.print(f'[bold][green]Successfully restarted NetworkManager service[/][/]')
-        time.sleep(1)
+        time.sleep(2)
 
 
 def attack_inet_set():
@@ -151,8 +157,8 @@ def set_inet_to_monitor(inet_name):
         console.print('[bold][red]Error while trying to set network interface to monitor more[/][/]')
         console.print(e.output)
     else:
-        console.print('[bold][green]Network interface was successfuly set to monitor mode[/][/]')
-        time.sleep(1)
+        console.print('[bold][green]Network interface was successfuly set to monitor mode\n[/][/]')
+        time.sleep(2)
 
 
 def config_rouge_ap(ssid, inet, channel):
