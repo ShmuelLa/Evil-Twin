@@ -4,3 +4,6 @@ https://www.cisco.com/assets/sol/sb/WAP371_Emulators/WAP371_Emulator_v1-0-1-3/he
 defence:
 https://www.aon.com/cyber-solutions/aon_cyber_labs/slaying-rogue-access-points-with-python-and-cheap-hardware/
 https://github.com/s0lst1c3/sentrygun
+
+
+https://www.fosstechnix.com/how-to-install-mysql-8-0-on-kali-linux/
