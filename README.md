@@ -1,15 +1,16 @@
 # 💀Evil twin attack💀
 Evil Twin attack python implementation
 # Created by: 
-### Shmuel Lavian
-### Ron Kolsky
-### Avigael Abitbol
-### Afik Peretz
+### Shmuel
+### Ron 
+### Avigael 
+### Afik 
 
  ### Visual explication:
   <img src="image_gif/19112020_evil.jpg" width="600" height="350" >
  
  ### Demonstration (Attacked):
+![UnderAttack](https://user-images.githubusercontent.com/74140353/168165330-b83c05ff-aa32-4541-9d7e-5593c0b54e60.gif)
 
   
  ### Demonstration (Attacker):
@@ -19,7 +20,12 @@ Evil Twin attack python implementation
 ### Hardware:
 💻 Laptop <br>
 📡 Network Card - TP_Link Archer T4U - Which allows to use moniter mode<br>
-⚡Operation system: Kali linux<br>
+⚡Operation system: Debian-based linux flavor <br>
+
+### Requirements
+install the requirements in the [requirements.txt file](https://github.com/ShmuelLa/Evil-Twin/blob/main/requirements.txt)
+and run the following : 
+sudo apt install dnsmasq dhcpcd5 hostapd automake libtool gengetopt dsniff
  
 ### Explaination:
 For this assignement we created hacking tool based on the "evil-twin attack" concept.<br>
@@ -74,6 +80,10 @@ The "victims" can be any AP around (Wifi access point). Also the mission was bes
 After setting up the apache2 server, and hosting it locally, the template of the portal must be put in the /var/www/html/ directory.
 To get the captive portal to instantly open once the user access the fake AP, we had to edit the [dns.conf](https://github.com/ShmuelLa/Evil-Twin/blob/main/config/dns.conf) file to include the line address=<ip> of where the Apache server is hosted, this causes all requests through the AP to be redirected to this server.
 This is why the user can not browse until he submits credentials - Once he submits, we edit the [dns.conf](https://github.com/ShmuelLa/Evil-Twin/blob/main/config/dns.conf) file and remove the address line, which causes requests to be redirected normally.
+ 
+ 
+### NetworkManager 
+ The interface you choose must be set to unmanaged mode in the NetworkManager service, unless this is performed, the serivce will control the interface and you users will not be able to access the internet through your fake ap
     
 
 
