@@ -10,8 +10,10 @@ Evil Twin attack python implementation
   <img src="image_gif/19112020_evil.jpg" width="600" height="350" >
  
  ### Demonstration (Attacked):
-  ![UnderAttack](https://user-images.githubusercontent.com/74140353/168161896-fad61025-4517-455f-a393-1fe1e11b0089.gif)
 
+  
+ ### Demonstration (Attacker):
+ 
 
 
 ### Hardware:
@@ -62,6 +64,16 @@ The "victims" can be any AP around (Wifi access point). Also the mission was bes
     </br>Note: This module must be ran after the fake AP has been raised, or in real time, since the scan is time-bound. it will detect fake APs, but may also detect false positives.
     * [The second](https://github.com/ShmuelLa/Evil-Twin/blob/main/defence_v3.py) works in a simillar matter, but instead of sending deauthenticaion packets and disconnecting users - it instead performs a DDoS attack on the duplicate APs
     * [The third](https://github.com/ShmuelLa/Evil-Twin/blob/main/defence_v1.py) is an active scan that is not time bound, it alerts the user in the console once it detects an attack. it detects a flood of deauthentication packets, and / or SSID spoofing and alerts the user.
+
+
+
+
+# Discussion:
+
+### The captive portal:
+After setting up the apache2 server, and hosting it locally, the template of the portal must be put in the /var/www/html/ directory.
+To get the captive portal to instantly open once the user access the fake AP, we had to edit the [dns.conf](https://github.com/ShmuelLa/Evil-Twin/blob/main/config/dns.conf) file to include the line address=<ip> of where the Apache server is hosted, this causes all requests through the AP to be redirected to this server.
+This is why the user can not browse until he submits credentials - Once he submits, we edit the [dns.conf](https://github.com/ShmuelLa/Evil-Twin/blob/main/config/dns.conf) file and remove the address line, which causes requests to be redirected normally.
     
 
 
