@@ -63,7 +63,7 @@ while 1:
         os.system('clear')
         set_inet_to_monitor(net_interface)
         set_inet_unmanaged(net_interface)
-        set_netmask()
+        set_netmask(net_interface)
         set_iptables()
         ap = subprocess.Popen(shlex.split('hostapd config/hostapd.conf'))
         start_dnsmasq()

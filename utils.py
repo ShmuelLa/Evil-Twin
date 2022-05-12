@@ -42,7 +42,7 @@ def main_menu_io():
     return user_input
 
 
-def set_netmask():
+def set_netmask(inet_name):
     """
     TODO change this!!!!
     sudo ifconfig wlan1 up 10.100.101.1 netmask 255.255.255.0
@@ -51,9 +51,9 @@ def set_netmask():
     """
     console.print(f'[bold][yellow]Setting network interface netmast range[/][/]')
     try:
-        subprocess.run(shlex.split('ifconfig wlan1 up 10.100.101.1 netmask 255.255.255.0'), check = True)
+        subprocess.run(f'ifconfig {inet_name} up 10.100.101.1 netmask 255.255.255.0', check = True, shell=True)
         subprocess.run(shlex.split('route add -net 10.100.101.0 netmask 255.255.255.0 gw 10.100.101.1'), check = True)
-        subprocess.run(shlex.split('ip link set wlan1 up'), check = True)
+        subprocess.run(f'ip link set {inet_name} up', check = True, shell=True)
     except subprocess.CalledProcessError as e:
         console.print(f'[bold][red]Error Setting netmast[/][/]')
         console.print(e.output)
