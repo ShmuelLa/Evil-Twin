@@ -2,7 +2,6 @@ import os
 from scapy.all import get_if_list
 from prompt_toolkit import prompt
 from rich.console import Console
-import click
 from utils import *
 from pyfiglet import figlet_format
 from termcolor import cprint
@@ -51,6 +50,9 @@ cprint(figlet_format('Welcome to the EvilTwin Framework!', font='slant'), 'green
 attack_inet = None
 internet_inet = None
 
+# TODO
+ssid = None
+
 while 1:
     user_input = main_menu_io()
     if user_input == "0":
@@ -69,6 +71,7 @@ while 1:
         set_inet_unmanaged(attack_inet)
         set_netmask(attack_inet)
         set_iptables(attack_inet, internet_inet)
+        set_hostapd_conf(attack_inet, ssid, 11)
         ap = subprocess.Popen(shlex.split('hostapd config/hostapd.conf'))
         start_dnsmasq()
         """

@@ -10,6 +10,17 @@ import shlex
 console = Console()
 
 
+def set_hostapd_conf(attack_inet, ssid, channel):
+    with open('./config/hostapd.conf', "w") as file:
+        file.write(f'interface={attack_inet}\n')
+        file.write('driver=nl80211\n')
+        file.write(f'ssid={ssid}\n')
+        file.write('hw_mode=g\n')
+        file.write(f'channel={channel}\n')
+        file.write('macaddr_acl=0\n')
+        file.write('ignore_broadcast_ssid=0n')
+
+
 def default_dnsmasq_conf(file):
     file.write("interface=wlan1\n")
     file.write("dhcp-range=10.100.101.2, 10.100.101.30, 255.255.255.0, 12h\n")
