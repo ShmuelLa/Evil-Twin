@@ -98,6 +98,7 @@ while 1:
         # ((mac_addr, ap_name, channel, dbm_signal), chosen_client_mac)
         scan_results = ap_client_scanner(main_inet)
 
+    # EvilTwin set up and attack
     elif user_input == "3":
         if scan_results is None:
             console.print(f'[bold][red]Error: Cannot initiate an EvilTwin attack without first scannig for potetial targets\n[/][/]')
@@ -114,3 +115,11 @@ while 1:
         here we need to print the password and stop!!
         """
         os.system('clear')
+
+    # Defensive Mechanism
+    elif user_input == "8":
+        pass
+    
+    # Install Requirements
+    elif user_input == "9":
+        pass

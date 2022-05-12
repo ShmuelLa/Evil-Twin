@@ -89,7 +89,9 @@ def main_menu_io() -> str:
     console.print('[bold]Please choose the desired option [blue]number[/]: \n\
     1. Set network interface \n\
     2. Start network scan \n\
-    3. Start network scan \n\
+    3. Initiate EvilTwin attack \n\
+    8. Defensive Mechanism \n\
+    9. Install Requirements \n\
     0. Exit program[/]\n')
     user_input = prompt('>> ')
     return user_input
