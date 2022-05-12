@@ -143,7 +143,7 @@ def ap_client_scanner(interface):
         network_index[i] = network
         i += 1
     chosen_network = pickNetwork()
-    chosen_network_mac = client_dict[chosen_network[0]]
+    chosen_network_mac = chosen_network[0]
     # --------------------------------------------------------------------------------------------------
     # ----------------------------PART 2: scan and pick client from chosen network ---------------------
 

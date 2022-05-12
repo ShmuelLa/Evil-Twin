@@ -10,10 +10,32 @@ import shlex
 console = Console()
 
 
-def create_new_inet(inet_name):
+def progress_bar(unit: int):
+    with ProgressBar() as pb:
+        for _ in pb(range(unit)):
+            time.sleep(.01)
+
+
+def cleanup(virtual_iner_name: str):
+    with open('./shell/cleanup.sh', "w") as file:
+        file.write(f'#!/bin/sh\n')
+        file.write('airmon-ng check kill\n')
+        file.write(f'service hostapd stop\n')
+        file.write(f'service apache2 stop\n')
+        file.write(f'service dnsmasq stop\n')
+        file.write(f'service rpcbind stop\n')
+        file.write(f'killall dnsmasq\n')
+        file.write(f'killall hostapd\n')
+        file.write(f'sudo iw dev {virtual_iner_name} interface del\n')
+        file.write(f'service NetworkManager restart\n')
+    subprocess.run('bash shell/cleanup.sh')
+    console.print(f'[bold][yellow]Cleaning up[/][/]')
+    progress_bar(400)
+
+
+def set_new_virtual_inet(inet_name: str):
     console.print(f'[bold][yellow]Setting new network interface {inet_name + "mon"}[/][/]')
     subprocess.run(f'iw dev {inet_name} interface add {inet_name+"mon"} type monitor', check=True, shell=True)
-    return inet_name + "mon"
 
 
 def set_apache_serv():
@@ -24,11 +46,12 @@ def set_apache_serv():
     subprocess.run('a2enmod rewrite', check=True, shell=True)
     subprocess.run('systemctl restart apache2', check=True, shell=True)
     subprocess.run('service apache2 start', check=True, shell=True)
+    progress_bar(100)
     console.print(f'[bold][green]Apache server was set successfuly\n\n[/][/]')
     time.sleep(2)
 
 
-def set_hostapd_conf(attack_inet, ssid, channel):
+def set_hostapd_conf(attack_inet: str, ssid: str, channel: str):
     with open('./config/hostapd.conf', "w") as file:
         file.write(f'interface={attack_inet}\n')
         file.write('driver=nl80211\n')
@@ -39,7 +62,7 @@ def set_hostapd_conf(attack_inet, ssid, channel):
         file.write('ignore_broadcast_ssid=0n')
         
 
-def default_dnsmasq_conf(file, attack_inet):
+def default_dnsmasq_conf(file, attack_inet: str):
     file.write(f'interface={attack_inet}\n')
     file.write("dhcp-range=10.100.101.2, 10.100.101.30, 255.255.255.0, 12h\n")
     file.write("dhcp-option=3,10.100.101.1 \n")
@@ -51,7 +74,7 @@ def default_dnsmasq_conf(file, attack_inet):
     file.write("clear-on-reload\n")
 
 
-def create_dnsconf_captive(attack_inet):
+def create_dnsconf_captive(attack_inet: str):
     with open('./config/dns.conf', "w") as file:
         default_dnsmasq_conf(file, attack_inet)
         file.write("address=/#/10.100.101.1")
@@ -62,10 +85,11 @@ def overwrite_dnsconf(attack_inet):
         default_dnsmasq_conf(file, attack_inet)
 
 
-def main_menu_io():
+def main_menu_io() -> str:
     console.print('[bold]Please choose the desired option [blue]number[/]: \n\
     1. Set network interface \n\
     2. Start network scan \n\
+    3. Start network scan \n\
     0. Exit program[/]\n')
     user_input = prompt('>> ')
     return user_input
@@ -83,11 +107,12 @@ def set_netmask(inet_name):
         subprocess.run(f'ifconfig {inet_name} up 10.100.101.1 netmask 255.255.255.0', check = True, shell=True)
         subprocess.run(shlex.split('route add -net 10.100.101.0 netmask 255.255.255.0 gw 10.100.101.1'), check = True)
         subprocess.run(f'ip link set {inet_name} up', check = True, shell=True)
+        progress_bar(100)
     except subprocess.CalledProcessError as e:
         console.print(f'[bold][red]Error Setting netmast[/][/]')
         console.print(e.output)
     else:
-        console.print(f'[bold][green]Successfuly set netmast[/][/]')
+        console.print(f'[bold][green]Successfuly set netmast\n\n[/][/]')
         time.sleep(2)
 
 
@@ -97,11 +122,12 @@ def set_iptables(attack_inet, internet_inet):
         subprocess.run(f'iptables --table nat --append POSTROUTING --out-interface {internet_inet} -j MASQUERADE', check = True, shell=True)
         subprocess.run(f'iptables --append FORWARD --in-interface {attack_inet} -j ACCEPT', check = True, shell=True)
         subprocess.run('echo 1 > /proc/sys/net/ipv4/ip_forward', check = True, shell=True)
+        progress_bar(100)
     except subprocess.CalledProcessError as e:
         console.print(f'[bold][red]Error Setting iptables[/][/]')
         console.print(e.output)
     else:
-        console.print(f'[bold][green]Successfuly set iptables routing for Rouge acces point[/][/]')
+        console.print(f'[bold][green]Successfuly set iptables routing for Rouge acces point\n\n[/][/]')
         time.sleep(2)
 
 
@@ -118,9 +144,7 @@ def set_inet_unmanaged(inet_name):
     console.print(f'[bold][yellow]Restarting NetworkManager service for changes to take effect[/][/]')
     try:
         subprocess.run(shlex.split('service NetworkManager restart'), check = True)
-        with ProgressBar() as pb:
-            for _ in pb(range(1000)):
-                time.sleep(.01)
+        progress_bar(1000)
     except subprocess.CalledProcessError as e:
         console.print(f'[bold][red]Error reatsrting NetworkManager[/][/]')
         console.print(e.output)
@@ -153,6 +177,7 @@ def set_inet_to_monitor(inet_name):
         subprocess.run(f'ifconfig {inet_name} down', check = True, shell=True)
         subprocess.run(f'iwconfig {inet_name} mode monitor', check = True, shell=True)
         subprocess.run(f'ifconfig {inet_name} up', check = True, shell=True)
+        progress_bar(100)
     except subprocess.CalledProcessError as e:
         console.print('[bold][red]Error while trying to set network interface to monitor more[/][/]')
         console.print(e.output)

