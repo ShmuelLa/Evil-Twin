@@ -66,14 +66,14 @@ internet_inet = None
 scan_results = None
 virtual_inet = None
 
-# TODO
-# ssid = "Shabab"
 
 while 1:
     user_input = main_menu_io()
     if user_input == "0":
         os.system('clear')
         cprint(figlet_format('Goodbye!', font='slant'), 'green')
+        if virtual_inet is not None:
+            cleanup(virtual_inet)
         exit()
 
     # Set Network Interface
@@ -88,7 +88,7 @@ while 1:
         set_inet_to_monitor(main_inet)
         set_inet_unmanaged(main_inet)
         virtual_inet = main_inet + "mon"
-        set_new_virtual_inet(virtual_inet)
+        set_new_virtual_inet(main_inet)
 
     # Network Scan
     elif user_input == "2":
@@ -109,7 +109,7 @@ while 1:
         set_apache_serv()
         ap = subprocess.Popen(shlex.split('hostapd config/hostapd.conf'))
 
-        subprocess.Popen([sys.executable, 'attack.py', scan_results[0][0], scan_results[1], virtual_inet, scan_results[0][2]], start_new_session=True).pid
+        subprocess.Popen([sys.executable, 'attack.py', str(scan_results[0][0]), str(scan_results[1]), str(virtual_inet), str(scan_results[0][2])], start_new_session=True).pid
         start_dnsmasq(main_inet)
         """
         here we need to print the password and stop!!

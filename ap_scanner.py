@@ -85,8 +85,6 @@ def scanClients(packet):
         #  addr1 is ap | addr2 is client,
         if to_DS and not from_DS:
             client_mac = packet.addr2
-            ap_mac = packet.addr1
-            print(f"AP: {ap_mac} CLIENT: {client_mac}")
             if packet.addr2 not in ap_client_list.setdefault(packet.addr1, []):
                 print(f"Possible client: {client_mac}")
                 ap_client_list[packet.addr1].append(packet.addr2)
@@ -141,6 +139,7 @@ def ap_client_scanner(interface):
     channel_changer.join()
     # Create network index dict, and prompt picking of a network.
     i = 0
+    os.system('clear')
     print("Available Networks:")
     for network in network_dict.keys():
         network_addr = network_dict.get(network)[0]
@@ -162,11 +161,13 @@ def ap_client_scanner(interface):
     sniff(iface=interface, prn=scanClients, timeout=timeout)
     channel_changer.join()
     i = 0
+    os.system('clear')
     print("Possible Clients:")
     for client in ap_client_list[target_ap]:
         client_mac = client
-        print(f"Index: {i} | MAC:{client_mac}")
+        print(f"Index: {i} | MAC: {client_mac}")
         i += 1
     chosen_client_mac = pickClient()
-    print(chosen_client_mac)
+    # print(chosen_client_mac)
+    return chosen_network, chosen_client_mac
 
