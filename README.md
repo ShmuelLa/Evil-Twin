@@ -1,12 +1,7 @@
 # 💀Evil twin attack💀
 Evil Twin attack python implementation
-# Created by: 
-### Shmuel
-### Ron 
-### Avigael 
-### Afik 
 
- ### Visual explication:
+### Visual explication:
   <img src="image_gif/19112020_evil.jpg" width="600" height="350" >
  
  ### Demonstration (Attacked):
@@ -15,7 +10,6 @@ Evil Twin attack python implementation
   
  ### Demonstration (Attacker):
  
-
 
 ### Hardware:
 💻 Laptop <br>
@@ -72,8 +66,6 @@ The "victims" can be any AP around (Wifi access point). Also the mission was bes
     * [The third](https://github.com/ShmuelLa/Evil-Twin/blob/main/defence_v1.py) is an active scan that is not time bound, it alerts the user in the console once it detects an attack. it detects a flood of deauthentication packets, and / or SSID spoofing and alerts the user.
 
 
-
-
 # Discussion:
 
 ### The captive portal:
@@ -84,7 +76,3 @@ This is why the user can not browse until he submits credentials - Once he submi
  
 ### NetworkManager 
  The interface you choose must be set to unmanaged mode in the NetworkManager service, unless this is performed, the serivce will control the interface and you users will not be able to access the internet through your fake ap
-    
-
-
- 
