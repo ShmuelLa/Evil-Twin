@@ -1,14 +1,12 @@
-# 💀Evil twin attack💀
+# 💀  <strong>Evil twin attack</strong>  💀
 Evil Twin attack python implementation
 
-### Visual explication:
-  <img src="image_gif/19112020_evil.jpg" width="600" height="350" >
- 
- ### Demonstration (Attacked):
-![UnderAttack](https://user-images.githubusercontent.com/74140353/168165330-b83c05ff-aa32-4541-9d7e-5593c0b54e60.gif)
+## <strong>Demonstration</strong> (Attacker  -  Victim):
+![Alt text](media/att_example.gif)
 
-  
- ### Demonstration (Attacker):
+
+#### Visual explication:
+  <img src="image_gif/19112020_evil.jpg" width="600" height="350" >
  
 
 ### Hardware:
