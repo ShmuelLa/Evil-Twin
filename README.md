@@ -6,7 +6,7 @@ Evil Twin attack python implementation
 
 
 #### Visual explication:
-  <img src="image_gif/19112020_evil.jpg" width="600" height="350" >
+![Alt text](media/19112020_evil.jpg)
  
 
 ### Hardware:
